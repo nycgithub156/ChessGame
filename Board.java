@@ -121,7 +121,7 @@ public class Board {
             case KING:
                 moves.addAll(possibleKingMoves(piece));
                 break;
-            default: 
+            default:
                 break;
         }
 
@@ -136,7 +136,8 @@ public class Board {
 
         if (getPieceAt(x, y + dir) == null) {
             moves.add(new Position(x, y + dir));
-            if ((pawn.getPieceColor() == PieceColor.WHITE && y == 2) || (pawn.getPieceColor() == PieceColor.BLACK && y == 7)) {
+            if ((pawn.getPieceColor() == PieceColor.WHITE && y == 2)
+                    || (pawn.getPieceColor() == PieceColor.BLACK && y == 7)) {
                 if (getPieceAt(x, y + 2 * dir) == null) {
                     moves.add(new Position(x, y + 2 * dir));
                 }
@@ -217,7 +218,7 @@ public class Board {
         int y = rook.getPosition().getPositionY();
         PieceColor color = rook.getPieceColor();
 
-        int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }; 
+        int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
 
         for (int[] dir : directions) {
             int dx = dir[0];
@@ -231,7 +232,7 @@ public class Board {
                     moves.add(new Position(nx, ny));
                 } else {
                     if (p.getPieceColor() != color) {
-                        moves.add(new Position(nx, ny)); 
+                        moves.add(new Position(nx, ny));
                     }
                     break;
                 }
@@ -274,5 +275,66 @@ public class Board {
         }
 
         return moves;
+    }
+
+    public boolean isKingInCheck(PieceColor color) {
+        Piece king = null;
+        for (Piece p : pieces) {
+            if (p.getPieceType() == PieceType.KING && p.getPieceColor() == color) {
+                king = p;
+                break;
+            }
+        }
+        if (king == null)
+            return false;
+
+        Position kingPos = king.getPosition();
+
+        for (Piece p : pieces) {
+            if (p.getPieceColor() != color) {
+                List<Position> moves = possibleMoves(p);
+                for (Position move : moves) {
+                    if (move.equals(kingPos)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean movePiece(Position from, Position to) {
+        Piece piece = getPieceAt(from.getPositionX(), from.getPositionY());
+
+        if (piece == null) {
+            System.out.println("");
+            return false;
+        }
+
+        List<Position> moves = possibleMoves(piece);
+        boolean validMove = false;
+
+        for (Position pos : moves) {
+            if (pos.equals(to)) {
+                validMove = true;
+                break;
+            }
+        }
+
+        if (!validMove) {
+            System.out.println("Movimento inválido para esta peça.");
+            return false;
+        }
+
+        Piece target = getPieceAt(to.getPositionX(), to.getPositionY());
+        if (target != null && target.getPieceColor() != piece.getPieceColor()) {
+            pieces.remove(target);
+            System.out.println("Peça " + target + " capturada!");
+        }
+
+        piece.setPosition(to);
+        System.out.println(piece + " movida para " + to);
+        return true;
     }
 }
