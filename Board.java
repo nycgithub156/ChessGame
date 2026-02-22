@@ -112,20 +112,17 @@ public class Board {
                 break;
             case KNIGHT:
                 moves.addAll(possibleKnightMoves(piece));
-                /*
-                 * case ROOK:
-                 * moves.addAll(possibleRookMoves(piece));
-                 * break;
-                 * case KNIGHT:
-                 * moves.addAll(possibleKnightMoves(piece));
-                 * break;
-                 * case QUEEN:
-                 * moves.addAll(possibleQueenMoves(piece));
-                 * break;
-                 * case KING:
-                 * moves.addAll(possibleKingMoves(piece));
-                 * break;
-                 */
+            case ROOK:
+                moves.addAll(possibleRookMoves(piece));
+                break;
+            case QUEEN:
+                moves.addAll(possibleQueenMoves(piece));
+                break;
+            case KING:
+                moves.addAll(possibleKingMoves(piece));
+                break;
+            default: 
+                break;
         }
 
         return moves;
@@ -139,8 +136,7 @@ public class Board {
 
         if (getPieceAt(x, y + dir) == null) {
             moves.add(new Position(x, y + dir));
-            if ((pawn.getPieceColor() == PieceColor.WHITE && y == 2)
-                    || (pawn.getPieceColor() == PieceColor.BLACK && y == 7)) {
+            if ((pawn.getPieceColor() == PieceColor.WHITE && y == 2) || (pawn.getPieceColor() == PieceColor.BLACK && y == 7)) {
                 if (getPieceAt(x, y + 2 * dir) == null) {
                     moves.add(new Position(x, y + 2 * dir));
                 }
@@ -198,6 +194,71 @@ public class Board {
         int[][] offsets = {
                 { 1, 2 }, { 2, 1 }, { 2, -1 }, { 1, -2 },
                 { -1, -2 }, { -2, -1 }, { -2, 1 }, { -1, 2 }
+        };
+
+        for (int[] offset : offsets) {
+            int nx = x + offset[0];
+            int ny = y + offset[1];
+
+            if (nx >= 1 && nx <= 8 && ny >= 1 && ny <= 8) {
+                Piece p = getPieceAt(nx, ny);
+                if (p == null || p.getPieceColor() != color) {
+                    moves.add(new Position(nx, ny));
+                }
+            }
+        }
+
+        return moves;
+    }
+
+    private List<Position> possibleRookMoves(Piece rook) {
+        List<Position> moves = new ArrayList<>();
+        int x = rook.getPosition().getPositionX();
+        int y = rook.getPosition().getPositionY();
+        PieceColor color = rook.getPieceColor();
+
+        int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }; 
+
+        for (int[] dir : directions) {
+            int dx = dir[0];
+            int dy = dir[1];
+            int nx = x + dx;
+            int ny = y + dy;
+
+            while (nx >= 1 && nx <= 8 && ny >= 1 && ny <= 8) {
+                Piece p = getPieceAt(nx, ny);
+                if (p == null) {
+                    moves.add(new Position(nx, ny));
+                } else {
+                    if (p.getPieceColor() != color) {
+                        moves.add(new Position(nx, ny)); 
+                    }
+                    break;
+                }
+                nx += dx;
+                ny += dy;
+            }
+        }
+
+        return moves;
+    }
+
+    private List<Position> possibleQueenMoves(Piece queen) {
+        List<Position> moves = new ArrayList<>();
+        moves.addAll(possibleBishopMoves(queen));
+        moves.addAll(possibleRookMoves(queen));
+        return moves;
+    }
+
+    private List<Position> possibleKingMoves(Piece king) {
+        List<Position> moves = new ArrayList<>();
+        int x = king.getPosition().getPositionX();
+        int y = king.getPosition().getPositionY();
+        PieceColor color = king.getPieceColor();
+
+        int[][] offsets = {
+                { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 },
+                { -1, 0 }, { -1, -1 }, { 0, -1 }, { 1, -1 }
         };
 
         for (int[] offset : offsets) {
