@@ -2,7 +2,17 @@ public class Main {
     public static void main(String[] args) {
         Board board = new Board();
         board.initializeBoard();
+
         displayBoard(board);
+
+        for (Piece piece : board.getPieces()) {
+            System.out.println(piece.getPieceType() + " em " + piece.getPosition());
+            System.out.println("Movimentos possíveis:");
+            for (Position move : board.possibleMoves(piece)) {
+                System.out.println(" -> " + move);
+            }
+            System.out.println("---------------------------");
+        }
     }
 
     public static void displayBoard(Board board) {

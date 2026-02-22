@@ -22,4 +22,9 @@ public class Position {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
+
+    @Override
+    public String toString() {
+        return "(" + positionX + "," + positionY + ")";
+    }
 }

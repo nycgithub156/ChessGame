@@ -32,4 +32,9 @@ public class Piece {
     public void setPieceColor(PieceColor pieceColor) {
         this.pieceColor = pieceColor;
     }
+
+    @Override
+    public String toString() {
+        return pieceType + " " + pieceColor + " em " + position;
+    }
 }
