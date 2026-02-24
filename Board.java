@@ -112,6 +112,7 @@ public class Board {
                 break;
             case KNIGHT:
                 moves.addAll(possibleKnightMoves(piece));
+                break;
             case ROOK:
                 moves.addAll(possibleRookMoves(piece));
                 break;
@@ -308,7 +309,7 @@ public class Board {
         Piece piece = getPieceAt(from.getPositionX(), from.getPositionY());
 
         if (piece == null) {
-            System.out.println("");
+            System.out.println("There are no pieces in that position.");
             return false;
         }
 
@@ -323,18 +324,52 @@ public class Board {
         }
 
         if (!validMove) {
-            System.out.println("Movimento inválido para esta peça.");
+            System.out.println("Invalid move for that piece.");
             return false;
         }
 
         Piece target = getPieceAt(to.getPositionX(), to.getPositionY());
         if (target != null && target.getPieceColor() != piece.getPieceColor()) {
             pieces.remove(target);
-            System.out.println("Peça " + target + " capturada!");
         }
 
         piece.setPosition(to);
-        System.out.println(piece + " movida para " + to);
+        return true;
+    }
+
+    public boolean isCheckmate(PieceColor color) {
+        if (!isKingInCheck(color)) {
+            return false;
+        }
+
+        for (Piece piece : pieces) {
+            if (piece.getPieceColor() != color)
+                continue;
+
+            Position originalPos = piece.getPosition();
+            List<Position> moves = possibleMoves(piece);
+
+            for (Position move : moves) {
+                Piece captured = getPieceAt(move.getPositionX(), move.getPositionY());
+
+                piece.setPosition(move);
+                if (captured != null) {
+                    pieces.remove(captured);
+                }
+
+                boolean stillInCheck = isKingInCheck(color);
+
+                piece.setPosition(originalPos);
+                if (captured != null) {
+                    pieces.add(captured);
+                }
+
+                if (!stillInCheck) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 }
